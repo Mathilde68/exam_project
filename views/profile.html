@@ -1,0 +1,22 @@
+%include("_header")
+
+    <main id="profile" class="mt-16 p-4">
+
+        % if 'customer' in {user_role}:
+        <h1>Hello you sexy {{user_role}}</h1>
+        % elif 'partner' in {user_role}:
+        <h1>Howdy {{user_role}}!</h1>
+        % elif 'admin' in {user_role}:
+        <h1>Whatup admin!</h1>
+        % end
+
+    <section id="properties" class="grid grid-cols-[1fr_1fr] gap-4">
+        % for property in properties:
+            %include("_property")
+        % end
+    </section>
+    %include("__btn_more")
+
+</main>
+
+%include("_footer")

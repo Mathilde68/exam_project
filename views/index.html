@@ -1,0 +1,42 @@
+%include("_header")
+
+<main class="flex">
+
+  <section class="main_content">
+
+    <div class="map_container">
+      <div id='map' class="map"></div>
+      <script>
+        var properties = JSON.parse('{{!json.dumps(properties)}}');
+        mapboxgl.accessToken = "{{mapbox_token}}"
+        var map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/streets-v11',
+          center: [12.4083, 55.7361],
+          zoom: 8.5
+        });
+        properties.forEach(property => {
+          let marker = new mapboxgl.Marker()
+            .setLngLat([property.property_lon, property.property_lat]) // Marker coordinates
+            .addTo(map);
+        })
+      </script>
+
+
+
+    </div>
+
+    <div class="properties_container">
+
+      <div id="properties" class="properties">
+        % for property in properties:
+        %include("_property")
+        % end
+      </div>
+      %include("__btn_more", page_number=2)
+    </div>
+  </section>
+</main>
+
+
+%include("_footer")

@@ -1,0 +1,10 @@
+
+<form id="{{property["property_pk"]}}" >
+    <input name="property_id" type="text" value="{{property["property_pk"]}}">
+    
+    <input type="hidden" name="block_button" value="{{value}}">
+    <button  mix-data="[id='{{property['property_pk']}}']" mix-post="/toogle_property_block">
+       {{text}}
+    </button>
+
+</form>

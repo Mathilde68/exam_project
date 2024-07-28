@@ -1,0 +1,27 @@
+%import x
+
+<form id="frm_login" autocomplete="off" class="">
+    <div>
+    <label for="user_email">Email</label>
+    <input name="user_email" class="" type="text"  autocomplete="none" 
+        mix-check="{{x.EMAIL_REGEX}}">
+    </div>
+    <div>
+    <label for="user_password">Password</label>
+    <input name="user_password" class="" type="password"  autocomplete="new-password"
+        mix-check="{{x.USER_PASSWORD_REGEX}}">
+        <a href="/forgot_password" class="forgot_password"
+        id="forgot_password"
+    >
+        Forgot password?
+    </a>
+    </div>
+    <button class=""
+        mix-data="#frm_login"
+        mix-post="/login"
+        mix-default="Login"
+        mix-await="Please wait ..."
+    >
+        Login
+    </button>
+</form>

@@ -1,0 +1,16 @@
+%import x
+
+<form id="frm_verify" autocomplete="off" class="verify_form">
+    <!-- email just for testing purposes, to see if it gets the correct one  -->
+    <input type="hidden"name="user_email" value="{{email}}" mix-check="{{x.EMAIL_REGEX}}">
+    <div>
+        <label for="verfication_code">Verification code:</label>
+        <input id="verification_code" name="verification_code" type="text" autocomplete="new-code"
+           minlength="6" maxlength="6" mix-check="{{x.VERIFICATION_CODE_REGEX}}"required>
+    </div>
+
+    <button class="" mix-data="#frm_verify" mix-post="/verify"  mix-default="Verify me" mix-await="Please wait ...">
+        Verify me
+    </button>
+
+</form>

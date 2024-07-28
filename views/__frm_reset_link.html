@@ -1,0 +1,15 @@
+
+<form id="frm_reset_link" autocomplete="off">
+    <div>
+        <label for="user_email">Email</label>
+        <input name="user_email" type="text"  autocomplete="none" 
+        mix-check="{{x.EMAIL_REGEX}}">
+    </div>
+    <button class=""
+    mix-data="#frm_reset_link"
+    mix-post="/forgot_password"
+    mix-default="Get reset link"
+    mix-await="Please wait ...">
+    Get reset link
+    </button>
+</form>

@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&display=swap');
+
+:root{
+    /* FONTS */
+--font-header: "Oswald", sans-serif;
+--font-body: "Open sans", sans-serif;
+
+    /* COLORS */
+--color-bg:#d1e2ec;
+--color-primary: #194a8b;
+--color-secondary: #12123f;
+--color-tertiary: #fafafe;
+--color-accent:#ff8b25;
+
+
+--color-error:#d73e23;
+--color-bg_error:#faedea;
+--color-valid:rgb(91, 174, 95);
+
+--color-text-dark:rgb(37, 31, 53);
+--color-text-light:#FAFAFB;
+
+
+    /* SPACING */
+--margin-desktop: 9.4rem;
+--margin-mobile: 2.1rem;
+}
