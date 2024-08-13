@@ -229,6 +229,7 @@ def _():
     try:
         x.no_cache()
         user = x.validate_user_logged()
+        user_pk=(user["user_pk"])
         db = x.db()
 
         
@@ -238,11 +239,28 @@ def _():
             INNER JOIN bookings b ON p.property_pk = b.property_fk
             WHERE b.user_fk = ?
             ORDER BY p.property_created_at 
-        """, (user["user_pk"],))
+        """, (user_pk,))
         
-        properties = q.fetchall()
-        ic(properties)  
-        return template("profile.html", is_logged=True, properties=properties, user=user)
+        booked_properties = q.fetchall()
+        ic(booked_properties)  
+
+
+         # Query for owned properties
+        q_owned = db.execute("""
+            SELECT p.* 
+            FROM properties p
+            INNER JOIN partners_properties pp ON p.property_pk = pp.property_fk
+            WHERE pp.user_fk = ?
+            ORDER BY p.property_created_at
+        """, (user_pk,))
+        owned_properties = q_owned.fetchall()
+
+        ic(user_pk)
+
+        ic(owned_properties)
+
+
+        return template("profile.html", is_logged=True, properties=booked_properties, owned_properties=owned_properties, user=user)
     except Exception as ex:
         ic(ex)
         response.status = 303 

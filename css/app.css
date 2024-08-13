@@ -287,6 +287,10 @@ nav .links {
     margin: 8rem auto;
 }
 
+#signup_section{
+    text-align: center;
+}
+
 section h1{
     text-align: center;
     margin-bottom: 2rem;
@@ -344,7 +348,6 @@ input:focus{
 
 #profile_grid_top{
     display: grid;
-    grid-template-columns: 2fr 4fr;
     background-image: url("/images/garden_house_bg.jpg");
     background-position: 100% 61%;
   background-size: cover;
@@ -359,13 +362,12 @@ input:focus{
     display: flex;
     flex-direction: column;
 	background-color: var(--color-box);
-
-	width: 25rem;
 	border-radius: 1.5rem;
 	padding: 1rem 2rem;
 	color: var(--color-primary);
     height: min-content;
     gap: 0.5rem;
+    max-width: 25rem;
 }
 
 #profile_info_panel h1{
@@ -379,16 +381,24 @@ input:focus{
     text-transform: capitalize;
 }
 
-#edit_profile, #delete_profile{
-background-color: transparent;
-text-transform: none;
-padding: 0;
-color: var(--color-primary);
-font-family: var(--font-body);
-font-size: 1rem;
-text-decoration: underline;
-text-align: left;
-width: 100%;
+#profile_info_panel > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: flex-start;
+}
+
+#edit_profile, #delete_profile {
+    background-color: transparent;
+    text-transform: none;
+    padding: 0;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    text-decoration: underline;
+    text-align: left;
+    min-width: 0rem;
+    margin:0rem;
 }
 
 #delete_profile{

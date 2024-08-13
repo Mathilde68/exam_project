@@ -98,9 +98,33 @@ CREATE TABLE bookings (
     FOREIGN KEY(property_fk) REFERENCES properties(property_pk)
 ) WITHOUT ROWID;
 
-INSERT INTO bookings VALUES ("d11854217ecc42b2bb17367fe33dc8f4","9ad72bd1-fe73-41fc-8e47-2d84e5bc590e")
 
+INSERT INTO bookings VALUES ("42be17c8273e4de5b9d3c3303e65a6ca","9ad72bd1-fe73-41fc-8e47-2d84e5bc590e")
 SELECT * FROM bookings
+
+
+
+
+DROP TABLE if EXISTS partners_properties;
+
+CREATE TABLE partners_properties (
+    user_fk             TEXT,
+    property_fk   TEXT,
+    PRIMARY KEY (user_fk, property_fk),
+    FOREIGN KEY(user_fk) REFERENCES users(user_pk)
+    FOREIGN KEY(property_fk) REFERENCES properties(property_pk)
+) WITHOUT ROWID;
+
+
+INSERT INTO partners_properties VALUES 
+("42be17c8273e4de5b9d3c3303e65a6ca","7e862e9b-d4bb-4f91-8686-b29f2b53e539"),
+("42be17c8273e4de5b9d3c3303e65a6ca","58c9ab83-11e9-42b3-b31a-2a709d231dd6"),
+("42be17c8273e4de5b9d3c3303e65a6ca","bcd7ec60-293b-428d-9ab2-bdcd3231c8e8"),
+("3083ea294e394c1ab03e26c476e367db","70a43129-17ce-4943-b376-cc4149c51a2c"),
+("3083ea294e394c1ab03e26c476e367db","d5bd1e8b-bc61-40d5-85bd-d7f8f36bc7ce"),
+("0ee77f976aa64f61a977da5e754210c0","da78803f-cf0c-46fa-a87a-36582ddc87e0"),
+("0ee77f976aa64f61a977da5e754210c0","9ad72bd1-fe73-41fc-8e47-2d84e5bc590e");
+SELECT * FROM partners_properties;
 
 
 DROP TABLE if EXISTS user_verification;
