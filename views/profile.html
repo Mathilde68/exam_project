@@ -17,13 +17,15 @@
         <section id="booking_section">
             <h2>Your bookings</h2>
             <div class="properties_container">
-<!-- insert real booked properties here -->
+            % if properties:
                 <div id="properties" class="properties">
                   % for property in properties:
-                  %include("_property")
+                  %include("_booked_property")
                   % end
                 </div>
-                %include("__btn_more", page_number=2)
+            % else:
+                <p> No booked properties yet</p>
+            % end
               </div>
         </section>
     

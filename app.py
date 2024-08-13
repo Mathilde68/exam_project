@@ -112,6 +112,78 @@ def _(page_number):
 
 
 ##############################
+@post("/book_property")
+def _():
+    try:
+        # Validate user logged in and get the user pk
+        user = x.validate_user_logged()
+        user_pk = user["user_pk"]
+        ic(user_pk)
+      
+
+        # Getting the property_pk 
+        property_pk = request.forms.get('property_id')
+        property_pk = str(property_pk)
+        ic(property_pk)
+
+        db = x.db()
+        # checking if the booking already exists
+        q = db.execute("""
+            SELECT * FROM bookings 
+            WHERE user_fk = ? AND property_fk = ?
+            LIMIT 1
+        """, (user_pk, property_pk))
+        existing_booking = q.fetchone()
+
+        if existing_booking:
+            ic("NO")
+            raise Exception("Property has already been booked", 409)
+        
+        # Insert into my bookings table
+      
+        q = db.execute("INSERT INTO bookings VALUES(?,?)", 
+                       (user_pk, property_pk))
+        db.commit()
+        
+        ic("booked")
+
+        return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="7000" class="success">
+                   Succesfully booked
+                </div>
+            </template>
+            """
+    
+       
+        
+    except Exception as ex:
+        ic(ex)
+        try:
+            response.status = ex.args[1]
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {ex.args[0]}
+                </div>
+            </template>
+            """
+        except Exception as ex:
+            ic(ex)
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                   System under maintainance
+                </div>
+            </template>
+            """
+
+    finally:
+        if "db" in locals(): db.close()
+
+
+##############################
 @get("/login")
 def _():
     try:
@@ -158,9 +230,18 @@ def _():
         x.no_cache()
         user = x.validate_user_logged()
         db = x.db()
-        q = db.execute("SELECT * FROM properties ORDER BY property_created_at LIMIT 0, ?", (x.ITEMS_PER_PAGE,))
+
+        
+        q = db.execute("""
+            SELECT p.* 
+            FROM properties p
+            INNER JOIN bookings b ON p.property_pk = b.property_fk
+            WHERE b.user_fk = ?
+            ORDER BY p.property_created_at 
+        """, (user["user_pk"],))
+        
         properties = q.fetchall()
-        ic(properties)    
+        ic(properties)  
         return template("profile.html", is_logged=True, properties=properties, user=user)
     except Exception as ex:
         ic(ex)
@@ -282,8 +363,6 @@ def save_verification_code(user_pk, verification_code):
       
     finally:
          if "db" in locals(): db.close()
-
-
 
 
 #########################

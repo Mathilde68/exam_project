@@ -40,19 +40,18 @@ h2{
 }
 
 button {
-    display: block;
-    width: 10rem;
-    color: var(--color-text-light);
-    font-family: var(--font-body);
-    font-weight: bold;
-    font-size: 1rem;
-    border: none;
-    border-radius: 2.5rem;
-    background-color: var(--color-secondary);
-    margin: 0 auto;
-    padding: 0.5rem 1rem;
-    text-transform: uppercase;
-
+	display: block;
+	min-width: 10rem;
+	color: var(--color-text-light);
+	font-family: var(--font-body);
+	font-weight: bold;
+	font-size: 0.9rem;
+	border: none;
+	border-radius: 2.5rem;
+	background-color: var(--color-secondary);
+	margin: 0rem auto;
+	padding: 0.5rem 1rem;
+	text-transform: uppercase;
 }
 
 button:hover {
@@ -169,7 +168,15 @@ nav .links {
     font-family: var(--font-body);
     background-color: var(--color-tertiary);
     border-radius: 2.5rem;
-    padding-bottom: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.property button{
+    margin-top: 1rem;
+}
+
+#block_button:hover{
+    background-color: var(--color-error2);
 }
 
 .title {
@@ -208,6 +215,7 @@ nav .links {
 .property>.price_container {
     display: inline;
 }
+
 
 
 @media screen and (min-width: 1024px) {

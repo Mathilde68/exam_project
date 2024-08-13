@@ -98,7 +98,7 @@ CREATE TABLE bookings (
     FOREIGN KEY(property_fk) REFERENCES properties(property_pk)
 ) WITHOUT ROWID;
 
-INSERT INTO bookings VALUES ("d11854217ecc42b2bb17367fe33dc8f4","7e862e9b-d4bb-4f91-8686-b29f2b53e539")
+INSERT INTO bookings VALUES ("d11854217ecc42b2bb17367fe33dc8f4","9ad72bd1-fe73-41fc-8e47-2d84e5bc590e")
 
 SELECT * FROM bookings
 
