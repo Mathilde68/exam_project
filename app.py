@@ -44,23 +44,18 @@ def _():
         properties = q.fetchall()
         ic(properties)
         is_logged = False
-        user_role='no user'
+        user= False
+        
         try:    
-            
             user = x.validate_user_logged()
-            if user:
-                user_role = user['user_role']
-                ic(user)
-            else:
-                user_role='no_user'
-                ic('no user')
-            
             is_logged = True
+
+            
         except:
             pass
 
         return template("index.html", properties=properties, mapbox_token=credentials.mapbox_token, 
-                        is_logged=is_logged,json=json, user_role=user_role)
+                        is_logged=is_logged,json=json, user=user)
     
     except Exception as ex:
         ic(ex)
@@ -83,15 +78,19 @@ def _(page_number):
         properties = q.fetchall()
 
         is_logged = False
+        user_role=False
+        user= False
+
         try:
-            x.validate_user_logged()
+            user = x.validate_user_logged()
             is_logged = True
+  
         except:
             pass
 
         html = ""
         for property in properties: 
-            html += template("_property", property=property, is_logged=is_logged)
+            html += template("_property", property=property, is_logged=is_logged, user=user)
         btn_more = template("__btn_more", page_number=next_page)
         if len(properties) < x.ITEMS_PER_PAGE: 
             btn_more = ""
@@ -105,8 +104,9 @@ def _(page_number):
         <template mix-function="addMarker">{json.dumps(properties)}</template>
         """
     except Exception as ex:
+        ic("well shit")
         ic(ex)
-        return "ups..."
+        return "System under maintenance"
     finally:
         if "db" in locals(): db.close()
 
@@ -157,12 +157,11 @@ def _():
     try:
         x.no_cache()
         user = x.validate_user_logged()
-        user_role = user['user_role']
         db = x.db()
         q = db.execute("SELECT * FROM properties ORDER BY property_created_at LIMIT 0, ?", (x.ITEMS_PER_PAGE,))
         properties = q.fetchall()
         ic(properties)    
-        return template("profile.html", is_logged=True, properties=properties, user_role=user_role)
+        return template("profile.html", is_logged=True, properties=properties, user=user)
     except Exception as ex:
         ic(ex)
         response.status = 303 

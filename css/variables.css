@@ -6,19 +6,20 @@
 --font-body: "Open sans", sans-serif;
 
     /* COLORS */
---color-bg:#d1e2ec;
---color-primary: #194a8b;
---color-secondary: #12123f;
---color-tertiary: #fafafe;
---color-accent:#ff8b25;
+--color-bg:#ccd4c8;
+--color-box:#e8f2eadc;
+--color-primary: #2b4c2f;
+--color-secondary: #0f331e;
+--color-tertiary: #fdf9f5;
+--color-accent:#4b3127;
 
 
---color-error:#d73e23;
+--color-error:#cf3014;
 --color-bg_error:#faedea;
 --color-valid:rgb(91, 174, 95);
 
---color-text-dark:rgb(37, 31, 53);
---color-text-light:#FAFAFB;
+--color-text-dark:rgb(24, 39, 27);
+--color-text-light:#fbfbfa;
 
 
     /* SPACING */

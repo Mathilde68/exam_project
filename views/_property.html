@@ -23,10 +23,11 @@
             nat
         </span>
         </p>
-        % if get("is_logged", False):
-        % if 'admin' in get('user_role', False):
+        % if get("user", False):
+            % if 'admin' in {user["user_role"]}:
             <form id="{{property["property_pk"]}}">
                 <input name="property_id" type="text" value="{{property["property_pk"]}}">
+               
                 <button
                     mix-data="[id='{{property['property_pk']}}']"
                     mix-post="/toogle_property_block"
@@ -34,8 +35,8 @@
                     Block
                 </button>
             </form>
+            % end
         % end
-    % end
     </div>
 </div>
 

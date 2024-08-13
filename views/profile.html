@@ -1,21 +1,45 @@
 %include("_header")
 
-    <main id="profile" class="mt-16 p-4">
+<main id="profile">
+    <section id="profile_grid_top">
 
-        % if 'customer' in {user_role}:
-        <h1>Hello you sexy {{user_role}}</h1>
-        % elif 'partner' in {user_role}:
-        <h1>Howdy {{user_role}}!</h1>
-        % elif 'admin' in {user_role}:
-        <h1>Whatup admin!</h1>
-        % end
+        <section id="profile_info_panel">
 
-    <section id="properties" class="grid grid-cols-[1fr_1fr] gap-4">
-        % for property in properties:
-            %include("_property")
-        % end
+            <h1> Welcome {{user["user_name"]}}</h1>
+            <p>{{user["user_role"]}}</p>
+            <p>Email: {{user["user_email"]}}</p>
+            <button id="edit_profile">Edit profile</button>
+            <button id="delete_profile">Delete your profile</button>
+        </section>
+
+
     </section>
-    %include("__btn_more")
+        <section id="booking_section">
+            <h2>Your bookings</h2>
+            <div class="properties_container">
+<!-- insert real booked properties here -->
+                <div id="properties" class="properties">
+                  % for property in properties:
+                  %include("_property")
+                  % end
+                </div>
+                %include("__btn_more", page_number=2)
+              </div>
+        </section>
+    
+    % if 'partner' in {user["user_role"]}:
+    <section id="partner_properties_section">
+        <h2>Your properties</h2>
+    </section>
+    % end
+
+    % if 'admin' in {user["user_role"]}:
+    <section id="admin_panel">
+        <h2>Admin panel</h2>
+        <h4>Manage users</h4>
+        <h4>Manage properties</h4>
+    </section>
+    % end
 
 </main>
 

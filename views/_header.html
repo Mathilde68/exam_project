@@ -33,15 +33,12 @@
           </svg>RentZen
         </a>
 
-        <form>
-            <input type="text" placeholder="Where to?">
-        </form>
 
         <div class="links">
 
             % if get("is_logged", False):
                 <a href="/profile" class="{{ get('active_login', '') }}">
-                    Your property
+                    Your profile
                 </a>
             % else:
                 <a href="/signup" class="{{ get('active_login', '') }}">

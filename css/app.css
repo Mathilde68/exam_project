@@ -25,13 +25,18 @@ a:visited {
     color: var(--color-primary);
 }
 
-h1,
-h2 {
+h1 {
     font-family: var(--font-header);
 }
 
+
+
 h1{
     font-size: 2rem;
+}
+
+h2{
+    font-family: var(--font-body);
 }
 
 button {
@@ -67,6 +72,10 @@ input {
 }
 
 
+section {
+    margin: 0rem auto; 
+}
+
 
 /*HEADER styling*/
 nav {
@@ -74,7 +83,7 @@ nav {
     top: 0;
     left: 0;
     display: grid;
-    grid-template-columns: 1fr 20fr 20fr;
+    grid-template-columns: 1fr 20fr;
     gap: 1rem;
     height: 5rem;
     background-color: var(--color-tertiary);
@@ -262,10 +271,9 @@ nav .links {
 }
 
 /*signup page*/
-section{
-    margin-top: 8rem;
-    margin: 8rem auto; 
-}
+
+
+
 #signup_section, #login_section, #verify_section {
     margin-top: 8rem;
     margin: 8rem auto;
@@ -316,3 +324,73 @@ input:focus{
     width: 100%;
     text-align: right;
 }
+
+#properties{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:1rem;
+}
+
+
+/*profile*/
+
+#profile_grid_top{
+    display: grid;
+    grid-template-columns: 2fr 4fr;
+    background-image: url("/images/garden_house_bg.jpg");
+    background-position: 100% 61%;
+  background-size: cover;
+}
+
+#profile_grid_top section{
+    margin: 2rem 2rem;
+}
+
+
+#profile_info_panel {
+    display: flex;
+    flex-direction: column;
+	background-color: var(--color-box);
+
+	width: 25rem;
+	border-radius: 1.5rem;
+	padding: 1rem 2rem;
+	color: var(--color-primary);
+    height: min-content;
+    gap: 0.5rem;
+}
+
+#profile_info_panel h1{
+    text-align: left;
+    margin-bottom: 0rem;
+    font-size: 1.8rem;
+    text-transform: capitalize;
+}
+
+#profile_info_panel p:nth-child(2){
+    text-transform: capitalize;
+}
+
+#edit_profile, #delete_profile{
+background-color: transparent;
+text-transform: none;
+padding: 0;
+color: var(--color-primary);
+font-family: var(--font-body);
+font-size: 1rem;
+text-decoration: underline;
+text-align: left;
+width: 100%;
+}
+
+#delete_profile{
+    color: var(--color-error);
+}
+
+
+
+#booking_section h2{
+text-align: center;
+margin-top: 2rem;
+}
+

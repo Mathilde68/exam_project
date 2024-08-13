@@ -1,9 +1,11 @@
 %include("_header")
 
 <main class="flex">
-
+  % if get("user_role", False):
+    <h1>Hello {{user_role}}</h1>
+  % end
   <section class="main_content">
-
+    
     <div class="map_container">
       <div id='map' class="map"></div>
       <script>

@@ -86,6 +86,23 @@ SELECT * FROM properties
 ORDER BY property_created_at
 LIMIT 3 OFFSET 9;
 
+
+
+DROP TABLE if EXISTS bookings;
+
+CREATE TABLE bookings (
+    user_fk             TEXT,
+    property_fk   TEXT,
+    PRIMARY KEY (user_fk, property_fk),
+    FOREIGN KEY(user_fk) REFERENCES users(user_pk)
+    FOREIGN KEY(property_fk) REFERENCES properties(property_pk)
+) WITHOUT ROWID;
+
+INSERT INTO bookings VALUES ("d11854217ecc42b2bb17367fe33dc8f4","7e862e9b-d4bb-4f91-8686-b29f2b53e539")
+
+SELECT * FROM bookings
+
+
 DROP TABLE if EXISTS user_verification;
 
 CREATE TABLE user_verification (

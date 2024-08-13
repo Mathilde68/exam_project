@@ -84,6 +84,17 @@ def validate_logged():
     return user_id
 
 
+###############################
+def get_logged_user_role():
+ 
+    user = validate_user_logged()
+    if user:
+        user_role = user['user_role']
+    else:
+        user_role= False
+    return user_role
+
+
 ##############################
 
 USER_ID_LEN = 32
