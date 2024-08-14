@@ -115,13 +115,13 @@ def _(page_number):
 @post("/book_property")
 def _():
     try:
-        # Validate user logged in and get the user pk
+        # Validate that the user is logged in and get the user pk
         user = x.validate_user_logged()
         user_pk = user["user_pk"]
         ic(user_pk)
       
 
-        # Getting the property_pk 
+        # getting the property_pk 
         property_pk = request.forms.get('property_id')
         property_pk = str(property_pk)
         ic(property_pk)
@@ -136,10 +136,9 @@ def _():
         existing_booking = q.fetchone()
 
         if existing_booking:
-            ic("NO")
             raise Exception("Property has already been booked", 409)
         
-        # Insert into my bookings table
+        # Inserting into my bookings table
       
         q = db.execute("INSERT INTO bookings VALUES(?,?)", 
                        (user_pk, property_pk))
@@ -232,7 +231,7 @@ def _():
         user_pk=(user["user_pk"])
         db = x.db()
 
-        
+        # getting the booked properties
         q = db.execute("""
             SELECT p.* 
             FROM properties p
@@ -245,7 +244,7 @@ def _():
         ic(booked_properties)  
 
 
-         # Query for owned properties
+        # getting the owned properties for partners
         q_owned = db.execute("""
             SELECT p.* 
             FROM properties p
@@ -254,10 +253,6 @@ def _():
             ORDER BY p.property_created_at
         """, (user_pk,))
         owned_properties = q_owned.fetchall()
-
-        ic(user_pk)
-
-        ic(owned_properties)
 
 
         return template("profile.html", is_logged=True, properties=booked_properties, owned_properties=owned_properties, user=user)

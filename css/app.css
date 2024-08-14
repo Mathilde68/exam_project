@@ -162,7 +162,7 @@ nav .links {
 .property {
     display: flex;
     flex-direction: column;
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
     color: var(--color-text-dark);
     font-family: var(--font-body);
@@ -224,6 +224,12 @@ nav .links {
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
         padding-bottom: 2.5rem;
+    }
+
+    #profile .properties{
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+
     }
 
 }
@@ -337,11 +343,6 @@ input:focus{
     text-align: right;
 }
 
-#properties{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap:1rem;
-}
 
 
 /*profile*/
@@ -388,7 +389,7 @@ input:focus{
     align-content: flex-start;
 }
 
-#edit_profile, #delete_profile {
+.textbutton {
     background-color: transparent;
     text-transform: none;
     padding: 0;
@@ -400,9 +401,17 @@ input:focus{
     min-width: 0rem;
     margin:0rem;
 }
-
-#delete_profile{
+#delete_button{
     color: var(--color-error);
+}
+.textbutton:hover{
+    color: var(--color-accent);
+    background-color: transparent;
+
+}
+
+#delete_button:hover{
+    color: var(--color-error2);
 }
 
 
@@ -410,5 +419,18 @@ input:focus{
 #booking_section h2{
 text-align: center;
 margin-top: 2rem;
+}
+
+#partner_properties_section h2{
+    text-align: center;
+}
+
+#manage_property_flex {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: left;
+	align-content: flex-start;
+	padding: 0.5rem 1rem;
+	gap: 1.8rem;
 }
 
