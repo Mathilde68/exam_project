@@ -382,7 +382,7 @@ input:focus{
     text-transform: capitalize;
 }
 
-#profile_info_panel > div {
+#profile_info_panel  div {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;

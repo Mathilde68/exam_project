@@ -15,6 +15,7 @@ CREATE TABLE users(
     user_updated_at         INTEGER,
     user_is_verified        INTEGER,
     user_is_blocked         INTEGER,
+    user_is_deleted         INTEGER
     PRIMARY KEY(user_pk)
 ) WITHOUT ROWID;
 
@@ -31,6 +32,8 @@ INSERT INTO users VALUES(
     1,
     0
 );
+
+ALTER TABLE users ADD COLUMN user_deleted_at INTEGER DEFAULT 0;
 
 SELECT * FROM users;
 

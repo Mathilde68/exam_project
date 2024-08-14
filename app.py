@@ -265,6 +265,65 @@ def _():
         if "db" in locals(): db.close()
 
 
+@post("/delete_user")
+def _():
+    try:
+        user = x.validate_user_logged()
+        user_pk = user["user_pk"]
+  
+        # Get the current epoch time
+        current_time = int(time.time())
+    
+
+        db = x.db()
+        #check if user exists
+        q = db.execute("SELECT * FROM users WHERE user_pk = ? LIMIT 1", (user_pk,))
+        user = q.fetchone()
+
+        if user:
+            #Updating the user_deleted_at field with the current time (this is to do the SOOOOOFT delete)
+            db.execute("UPDATE users SET user_deleted_at = ? WHERE user_pk = ?", (current_time, user_pk))
+            db.commit()
+            ic('deleted')
+            response.delete_cookie("user")
+            response.status = 303
+            return f"""
+                <template mix-target="#profile_content" mix-replace>
+                     <section id="deleting_user"> 
+                        <h1> Deletion successful! </h1>
+                     </section>
+                </template>
+                """
+        else:
+            raise Exception("User is not found", 404)
+     
+    except Exception as ex:
+        ic(ex)
+        try:
+            response.status = ex.args[1]
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {ex.args[0]}
+                </div>
+            </template>
+            """
+        except Exception as ex:
+            ic(ex)
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                   System under maintainance
+                </div>
+            </template>
+            """
+    finally:
+        if "db" in locals(): db.close()
+  
+    
+
+
 ##############################
 @get("/logout")
 def _():
@@ -313,8 +372,8 @@ def _():
         hashed = bcrypt.hashpw(password, salt)
         
         # Insert the new user into the database
-        q = db.execute("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?)", 
-                       (user_pk, user_username, user_name, user_lastname, user_email, hashed, user_role, user_created_at, 0, 0, 0))
+        q = db.execute("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", 
+                       (user_pk, user_username, user_name, user_lastname, user_email, hashed, user_role, user_created_at, 0, 0, 0, 0))
         db.commit()
 
       
@@ -487,7 +546,7 @@ def _():
         user_email = x.validate_email()
         user_password = x.validate_password()
         db = x.db()
-        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 LIMIT 1", (user_email,))
+        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 AND user_deleted_at = 0 LIMIT 1", (user_email,))
         user = q.fetchone()
         ic(user)
         if not user: raise Exception("User not found or verified", 400)
@@ -781,6 +840,10 @@ def _():
         pass
     finally:
         if "db" in locals(): db.close()
+
+
+
+
 
 
 ####Arango code###

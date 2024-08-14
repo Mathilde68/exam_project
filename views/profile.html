@@ -1,19 +1,23 @@
 %include("_header")
 
 <main id="profile">
+    <section id="profile_content">
     <section id="profile_grid_top">
 
         <section id="profile_info_panel">
-
+            <form id="{{user["user_pk"]}}">
             <h1> Welcome {{user["user_name"]}}</h1>
             <p>{{user["user_role"]}}</p>
             <p>{{user["user_name"]}} {{user["user_last_name"]}}</p>
             <p>Username: {{user["user_username"]}}</p>
             <p>Email: {{user["user_email"]}}</p>
             <div>
+               
             <button class="textbutton">Edit profile</button>
-            <button id="delete_button" class="textbutton">Delete your profile</button>
+            <button id="delete_button" class="textbutton"   mix-data="[id='{{user['user_pk']}}']"
+            mix-post="/delete_user">Delete your profile</button>
             </div>
+        </form>
         </section>
 
 
