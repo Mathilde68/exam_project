@@ -35,6 +35,8 @@ INSERT INTO users VALUES(
 
 ALTER TABLE users ADD COLUMN user_deleted_at INTEGER DEFAULT 0;
 
+UPDATE users SET user_deleted_at = 0 WHERE user_pk = "b9e9b8d45d8445a68469e81b0013618d";
+
 SELECT * FROM users;
 
 

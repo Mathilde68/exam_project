@@ -9,7 +9,7 @@
 body {
     background-color: var(--color-bg);
     font-family: var(--font-body);
-    color:var(--color-text-dark);
+    color: var(--color-text-dark);
 }
 
 main {
@@ -31,27 +31,27 @@ h1 {
 
 
 
-h1{
+h1 {
     font-size: 2rem;
 }
 
-h2{
+h2 {
     font-family: var(--font-body);
 }
 
 button {
-	display: block;
-	min-width: 10rem;
-	color: var(--color-text-light);
-	font-family: var(--font-body);
-	font-weight: bold;
-	font-size: 0.9rem;
-	border: none;
-	border-radius: 2.5rem;
-	background-color: var(--color-secondary);
-	margin: 0rem auto;
-	padding: 0.5rem 1rem;
-	text-transform: uppercase;
+    display: block;
+    min-width: 10rem;
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 2.5rem;
+    background-color: var(--color-secondary);
+    margin: 0rem auto;
+    padding: 0.5rem 1rem;
+    text-transform: uppercase;
 }
 
 button:hover {
@@ -72,7 +72,7 @@ input {
 
 
 section {
-    margin: 0rem auto; 
+    margin: 0rem auto;
 }
 
 
@@ -87,9 +87,10 @@ nav {
     height: 5rem;
     background-color: var(--color-tertiary);
     align-items: center;
-    padding-left: 0.5rem;
+    padding-left: 2rem;
     padding-right: 0.5rem;
     z-index: 2;
+    box-shadow: 0px 2px 14px 1px var(--color-shadows);
 }
 
 nav input {
@@ -125,31 +126,33 @@ nav .links {
 .main_content {
     display: grid;
     grid-template-columns: 2fr 3fr;
-    margin: 0 1rem;
+    margin: 0;
 }
 
 /* Map container styling */
 .map_container {
-    position: sticky;
-    top: 6rem;
-    width: 100%;
-    height: 300px;
-    background-color: #f5f5f5;
-    border: 5px solid var(--color-accent);
-    border-radius: 2.5rem;
-}
-
-/* Map styling */
-.map {
     width: 100%;
     height: 100%;
-    border-radius: 2.5rem;
+}
+
+.map_container2 {
+    position: fixed;
+    width: 40%;
+    height: calc(100vh - 2rem);
+    top: 5rem;
+}
+
+
+/* Map styling */
+#map {
+    width: 100%;
+    height: 100%;
 }
 
 /* property styling - (the places to rent) */
 .properties_container {
     width: 100%;
-    padding: 2rem 2rem
+    padding: 2rem 3rem
 }
 
 .properties {
@@ -167,15 +170,25 @@ nav .links {
     color: var(--color-text-dark);
     font-family: var(--font-body);
     background-color: var(--color-tertiary);
-    border-radius: 2.5rem;
+    border-radius: 0.5rem 0.5rem 2.5rem 2.5rem;
     padding-bottom: 1rem;
+    box-shadow: 0px 1px 5px 1px var(--color-shadows);
+    
+ 
 }
 
-.property button{
+.property:hover{
+    transform: scale(1.01);
+    box-shadow: 0px 1px 14px 1px var(--color-shadows);
+    transition: 0.5s;
+   
+}
+
+.property button {
     margin-top: 1rem;
 }
 
-#block_button:hover{
+#block_button:hover {
     background-color: var(--color-error2);
 }
 
@@ -226,7 +239,7 @@ nav .links {
         padding-bottom: 2.5rem;
     }
 
-    #profile .properties{
+    #profile .properties {
         grid-template-columns: 1fr 1fr 1fr;
         gap: 1rem;
 
@@ -244,7 +257,7 @@ nav .links {
     padding: 0.5rem 1rem;
 }
 
-.success{
+.success {
     color: var(--color-text-dark);
     font-family: var(--font-body);
     background-color: var(--color-valid);
@@ -275,7 +288,11 @@ nav .links {
     border: 2px solid var(--color-valid);
 }
 
-#frm_signup, #frm_login, #frm_verify, #frm_reset_link {
+#frm_signup,
+#frm_login,
+#frm_verify,
+#frm_reset_link,
+#frm_confirm_delete {
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
@@ -288,16 +305,19 @@ nav .links {
 
 
 
-#signup_section, #login_section, #verify_section {
+#signup_section,
+#login_section,
+#verify_section,
+#confirm_delete_section {
     margin-top: 8rem;
     margin: 8rem auto;
 }
 
-#signup_section{
+#signup_section {
     text-align: center;
 }
 
-section h1{
+section h1 {
     text-align: center;
     margin-bottom: 2rem;
 }
@@ -325,14 +345,15 @@ section h1{
 }
 
 
-label{
+label {
     font-weight: 600;
 }
-input:focus{
+
+input:focus {
     border: 2px solid var(--color-primary);
 }
 
-#forgot_password{
+#forgot_password {
     background-color: transparent;
     padding: 0;
     color: var(--color-primary);
@@ -347,14 +368,14 @@ input:focus{
 
 /*profile*/
 
-#profile_grid_top{
+#profile_grid_top {
     display: grid;
     background-image: url("/images/garden_house_bg.jpg");
     background-position: 100% 61%;
-  background-size: cover;
+    background-size: cover;
 }
 
-#profile_grid_top section{
+#profile_grid_top section {
     margin: 2rem 2rem;
 }
 
@@ -362,27 +383,27 @@ input:focus{
 #profile_info_panel {
     display: flex;
     flex-direction: column;
-	background-color: var(--color-box);
-	border-radius: 1.5rem;
-	padding: 1rem 2rem;
-	color: var(--color-primary);
+    background-color: var(--color-box);
+    border-radius: 1.5rem;
+    padding: 1rem 2rem;
+    color: var(--color-primary);
     height: min-content;
     gap: 0.5rem;
     max-width: 25rem;
 }
 
-#profile_info_panel h1{
+#profile_info_panel h1 {
     text-align: left;
     margin-bottom: 0rem;
     font-size: 1.8rem;
     text-transform: capitalize;
 }
 
-#profile_info_panel p:nth-child(2){
+#profile_info_panel p:nth-child(2) {
     text-transform: capitalize;
 }
 
-#profile_info_panel  div {
+#profile_info_panel div {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -396,41 +417,56 @@ input:focus{
     color: var(--color-primary);
     font-family: var(--font-body);
     font-size: 1rem;
+    font-weight: 600;
     text-decoration: underline;
     text-align: left;
     min-width: 0rem;
-    margin:0rem;
+    margin: 0rem;
 }
-#delete_button{
+
+#delete_link {
     color: var(--color-error);
 }
-.textbutton:hover{
+
+
+
+.textbutton:hover {
     color: var(--color-accent);
     background-color: transparent;
 
 }
 
-#delete_button:hover{
+#delete_link:hover {
     color: var(--color-error2);
 }
 
 
 
-#booking_section h2{
-text-align: center;
-margin-top: 2rem;
+#booking_section h2 {
+    text-align: center;
+    margin-top: 2rem;
 }
 
-#partner_properties_section h2{
+#partner_properties_section h2 {
     text-align: center;
 }
 
 #manage_property_flex {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: left;
-	align-content: flex-start;
-	padding: 0.5rem 1rem;
-	gap: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-content: flex-start;
+    padding: 0.5rem 1rem;
+    gap: 1.8rem;
 }
 
+
+#delete_button{
+    background-color: var(--color-error);
+    color: var(--color-bg_error);
+
+}
+
+#delete_button:hover{
+    background-color: var(--color-error2);
+}

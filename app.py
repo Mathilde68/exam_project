@@ -265,11 +265,28 @@ def _():
         if "db" in locals(): db.close()
 
 
+########################################
+@get("/confirm_delete_profile")
+def _():
+    try:
+        x.validate_user_logged()
+     
+        return template("confirm_delete_profile.html") 
+    except Exception as ex:
+        ic(ex)
+        response.status = 303 
+        response.set_header('Location', '/login')
+        return
+   
+
+############################################
 @post("/delete_user")
 def _():
     try:
         user = x.validate_user_logged()
         user_pk = user["user_pk"]
+        user_password = x.validate_password()
+        user_name = user["user_username"]
   
         # Get the current epoch time
         current_time = int(time.time())
@@ -281,16 +298,30 @@ def _():
         user = q.fetchone()
 
         if user:
+              #check if the user_password is in bytes, if not encode it
+            password = user["user_password"]
+            if isinstance(password, str):
+                password = password.encode() 
+            #check the password matches
+            if not bcrypt.checkpw(user_password.encode(), password):
+                raise Exception("Invalid credentials", 400)
+        
             #Updating the user_deleted_at field with the current time (this is to do the SOOOOOFT delete)
             db.execute("UPDATE users SET user_deleted_at = ? WHERE user_pk = ?", (current_time, user_pk))
             db.commit()
             ic('deleted')
+
+              # Send a signup confirmation email
+            send_email.send_deletion_email(user_name)
+
+
             response.delete_cookie("user")
             response.status = 303
             return f"""
-                <template mix-target="#profile_content" mix-replace>
+                <template mix-target="#confirm_delete_section" mix-replace>
                      <section id="deleting_user"> 
                         <h1> Deletion successful! </h1>
+                        <p> An email with confirmation of your deletion has been sent </p>
                      </section>
                 </template>
                 """

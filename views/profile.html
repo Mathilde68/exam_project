@@ -2,66 +2,70 @@
 
 <main id="profile">
     <section id="profile_content">
-    <section id="profile_grid_top">
+        <section id="profile_grid_top">
 
-        <section id="profile_info_panel">
-            <form id="{{user["user_pk"]}}">
-            <h1> Welcome {{user["user_name"]}}</h1>
-            <p>{{user["user_role"]}}</p>
-            <p>{{user["user_name"]}} {{user["user_last_name"]}}</p>
-            <p>Username: {{user["user_username"]}}</p>
-            <p>Email: {{user["user_email"]}}</p>
-            <div>
-               
-            <button class="textbutton">Edit profile</button>
-            <button id="delete_button" class="textbutton"   mix-data="[id='{{user['user_pk']}}']"
-            mix-post="/delete_user">Delete your profile</button>
-            </div>
-        </form>
+            <section id="profile_info_panel">
+                <form id="{{user["user_pk"]}}">
+                    <h1> Welcome {{user["user_name"]}}</h1>
+                    <p>{{user["user_role"]}}</p>
+                    <p>{{user["user_name"]}} {{user["user_last_name"]}}</p>
+                    <p>Username: {{user["user_username"]}}</p>
+                    <p>Email: {{user["user_email"]}}</p>
+                    <div>
+
+                        <button class="textbutton">Edit profile</button>
+                        <a id="delete_link" href="/confirm_delete_profile" class="textbutton">
+                            Delete your profile
+                        </a>
+                        
+                    </div>
+
+                    
+                </form>
+            </section>
+
+
         </section>
-
-
-    </section>
         <section id="booking_section">
             <h2>Your bookings</h2>
             <div class="properties_container">
-            % if properties:
+                % if properties:
                 <div id="properties" class="properties">
-                  % for property in properties:
-                  %include("_booked_property")
-                  % end
+                    % for property in properties:
+                    %include("_booked_property")
+                    % end
                 </div>
-            % else:
+                % else:
                 <p> No booked properties yet</p>
-            % end
-              </div>
+                % end
+            </div>
         </section>
-    
-    
+
+
         % if 'partner' in user["user_role"]:
         <section id="partner_properties_section">
             <h2>Your properties</h2>
             <div class="properties_container">
                 % if owned_properties:
-                    <div id="owned_properties" class="properties">
-                        % for property in owned_properties:
-                            %include("_owned_property")
-                        % end
-                    </div>
+                <div id="owned_properties" class="properties">
+                    % for property in owned_properties:
+                    %include("_owned_property")
+                    % end
+                </div>
                 % else:
-                    <p>No properties owned yet</p>
+                <p>No properties owned yet</p>
                 % end
             </div>
         </section>
         % end
 
-    % if 'admin' in {user["user_role"]}:
-    <section id="admin_panel">
-        <h2>Admin panel</h2>
-        <h4>Manage users</h4>
-        <h4>Manage properties</h4>
-    </section>
-    % end
+        % if 'admin' in {user["user_role"]}:
+        <section id="admin_panel">
+            <h2>Admin panel</h2>
+            <h4>Manage users</h4>
+            <h4>Manage properties</h4>
+        </section>
+        % end
 
 </main>
 

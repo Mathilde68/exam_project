@@ -62,3 +62,20 @@ def send_reset_email(user_email, reset_token):
     except Exception as ex:
         ic(ex)
         return "error sending reset mail"
+    
+
+def send_deletion_email(user_name):
+    try:
+        user_name=user_name
+        email_body = template("__email_user_deleted", user_name= user_name)
+        result = send_email(
+        to_email='mathildeengb@gmail.com',
+        from_email='mathildeengb@gmail.com',
+        subject='Deletion confirmed',
+        email_body=email_body,
+        email='mathildeengb@gmail.com',
+        password=password_em)
+        return result
+    except Exception as ex:
+        ic(ex)
+        return "error sending signup mail"
