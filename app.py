@@ -1070,18 +1070,80 @@ def _():
 
 #####################################Arango code###########################
 
-##############################
-@get("/arango/properties")
+############################## with views
+@get("/arango/items")
 def _():
     try:
-        q = {"query":"FOR property IN properties LIMIT 1 RETURN property"}
-        properties = x.arango(q)
-        return properties
+          # Query to fetch items from ArangoDB
+        q = {"query": "FOR item IN items RETURN item"}
+        response = x.arango(q)
+        
+        # Extracting items from response
+        items = response.get('result', [])
+        
+        # Log the items to ensure correct data
+        
+        return template("arangoitems.html", items=items)
     except Exception as ex:
         ic(ex)
         return ex
     finally:
         pass
+
+##############################
+@get("/arangoview/properties")
+def _():
+    try:
+        q = {"query":"FOR property IN properties RETURN property"}
+        response = x.arango(q)
+
+        properties = response.get('result', [])
+
+        
+        return template("arangoproperties.html", properties=properties)
+    except Exception as ex:
+        ic(ex)
+        return ex
+    finally:
+        pass
+
+
+#########################
+@get("/arangoview/property")
+def _():
+    try:
+        
+        q = {"query":"FOR property IN properties LIMIT 1 RETURN property"}
+        response = x.arango(q)
+
+        property = response.get('result', [])
+        property = property[0]  # Get the first property
+        ic(property)
+        return template("arangoproperty.html", property=property)
+    except Exception as ex:
+        ic(ex)
+        return ex
+    finally:
+        pass
+
+############################## for thunderclient testing
+
+
+#########################
+@get("/arango/property")
+def _():
+    try:
+        
+        q = {"query":"FOR property IN properties LIMIT 1 RETURN property"}
+        property = x.arango(q)
+
+        return property
+    except Exception as ex:
+        ic(ex)
+        return ex
+    finally:
+        pass
+
 
 ##############################
 @delete("/arango/properties/<key>")
@@ -1108,7 +1170,6 @@ def _(key):
 @post("/arango/properties")
 def _():
     try:
-        # TODO: validate
         property_name = request.forms.get("property_name", "")
         property = {"name":property_name}
         q = {   "query": "INSERT @property INTO properties RETURN NEW",
@@ -1145,9 +1206,6 @@ def _(key):
         return ex
     finally:
         pass
-
-
-
 
 
 ##############################
