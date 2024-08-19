@@ -7,7 +7,7 @@
         <input id="user_password" name="user_password" class="" type="password"  autocomplete="new-password"
         mix-check="{{x.USER_PASSWORD_REGEX}}" required>
     </div>
-    <button id="delete_button" mix-data="#frm_confirm_delete" mix-post="/delete_user"  mix-default="Delete your profile" mix-await="Please wait ...">
+    <button id="delete_button" mix-data="#frm_confirm_delete" mix-put="/delete_user"  mix-default="Delete your profile" mix-await="Please wait ...">
        Delete your profile
     </button>
   

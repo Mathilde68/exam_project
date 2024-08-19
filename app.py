@@ -40,7 +40,7 @@ def _(property_splash_image):
 def _():
     try:
         db = x.db()
-        q = db.execute("SELECT * FROM properties ORDER BY property_created_at LIMIT 0, ?", (x.ITEMS_PER_PAGE,))
+        q = db.execute("SELECT * FROM properties WHERE blocked = ? ORDER BY property_created_at LIMIT 0, ?", (0,x.ITEMS_PER_PAGE,))
         properties = q.fetchall()
         ic(properties)
         is_logged = False
@@ -232,7 +232,7 @@ def _():
         db = x.db()
 
         # getting the booked properties
-        q = db.execute("""
+        q_booked = db.execute("""
             SELECT p.* 
             FROM properties p
             INNER JOIN bookings b ON p.property_pk = b.property_fk
@@ -240,7 +240,7 @@ def _():
             ORDER BY p.property_created_at 
         """, (user_pk,))
         
-        booked_properties = q.fetchall()
+        booked_properties = q_booked.fetchall()
         ic(booked_properties)  
 
 
@@ -254,8 +254,12 @@ def _():
         """, (user_pk,))
         owned_properties = q_owned.fetchall()
 
+        #getting all properties for the admin
+        q_all = db.execute("SELECT * FROM properties ORDER BY property_created_at")
+        properties = q_all.fetchall()
 
-        return template("profile.html", is_logged=True, properties=booked_properties, owned_properties=owned_properties, user=user)
+
+        return template("profile.html", is_logged=True, booked_properties=booked_properties, owned_properties=owned_properties, properties=properties, user=user)
     except Exception as ex:
         ic(ex)
         response.status = 303 
@@ -280,7 +284,7 @@ def _():
    
 
 ############################################
-@post("/delete_user")
+@put("/delete_user")
 def _():
     try:
         user = x.validate_user_logged()
@@ -351,7 +355,139 @@ def _():
             """
     finally:
         if "db" in locals(): db.close()
-  
+
+
+############################################
+@post("/edit_profile")
+def _():
+    user=x.validate_user_logged()
+    user_pk= user["user_pk"]
+    return f"""
+        <template mix-target="[id='{user_pk}']" mix-replace>
+             <form id="{user["user_pk"]}">
+                    <div id="profile_editform">
+                        <h1> Edit your profile</h1>
+                        <p>{user["user_role"]}</p>
+                        <div>
+                            <label> Name: </label>
+                            <div id="edit_name_container"> 
+                                <input type="text" id="user_name" name="user_name" mix-check="{x.USER_NAME_REGEX}"
+                                value="{user["user_name"]}" required>
+                                <input type="text" id="user_last_name" name="user_last_name" mix-check="{x.USER_LAST_NAME_REGEX}" 
+                                value="{user["user_last_name"]}" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Username: </label> 
+                            <input type="text" id="user_username" name="user_username" autocomplete="off"
+                                mix-check="{x.USER_USERNAME_REGEX}" value="{user["user_username"]}" required>
+                        </div>
+                        <div>
+                            <label>Email:</label> 
+                            <input name="user_email" type="text" autocomplete="off" 
+                            mix-check='{x.EMAIL_REGEX}' value="{user["user_email"]}" required>
+                        </div>
+                    </div>
+                    <div>
+
+
+                        <button mix-data="[id='{user['user_pk']}']" mix-put="/confirm_profile_edit"
+                            >Confirm</button>
+
+
+                    </div>
+                </form>
+        </template>
+        """
+
+
+@put("/confirm_profile_edit")
+def _():
+    try:
+        db = x.db()
+    
+        user=x.validate_user_logged()
+        user_pk= user["user_pk"]
+        
+        
+        user_username = x.validate_user_username()
+        user_name = x.validate_user_name()
+        user_last_name = x.validate_user_last_name()
+        user_email = x.validate_email()
+        
+        # checking if the email or username is already registered to another user and raising exception if soi
+        q = db.execute("SELECT * FROM users WHERE (user_email = ? OR user_username = ?) AND user_pk != ? LIMIT 1", 
+                       (user_email, user_username, user_pk))
+        already_user = q.fetchone()
+        
+        if already_user:
+            raise Exception("Email or Username already in use", 409)
+        
+
+
+        #Setting the time of the update
+        updated_at=int(time.time())
+        
+        
+    
+        db.execute("""
+            UPDATE users
+            SET user_username = ?, user_name = ?, user_last_name = ?, user_email = ?, user_updated_at = ?
+            WHERE user_pk = ?
+        """, (user_username, user_name, user_last_name, user_email, updated_at, user_pk))
+        
+        db.commit()
+        
+         # Getting the current user cookie so i cna update with new info
+        user_cookie = request.get_cookie("user", secret=x.COOKIE_SECRET)
+        
+        if not user_cookie:
+            raise Exception("User session not found", 401)
+        
+        # Updating only the relevant fields in the cookie
+        user_cookie["user_username"] = user_username
+        user_cookie["user_name"] = user_name
+        user_cookie["user_last_name"] = user_last_name
+        user_cookie["user_email"] = user_email
+        
+       
+        try:
+            import production
+            is_cookie_https = True
+        except ImportError:
+            is_cookie_https = False
+        
+        # Updating the cookie with new userdetails
+        response.set_cookie("user", user_cookie, secret=x.COOKIE_SECRET, httponly=True, secure=is_cookie_https)
+        
+        # redirect to the profile page to "refresh" and see the info panel again
+        return """
+        <template mix-redirect="/profile">
+        </template>
+        """
+    except Exception as ex:
+        ic(ex)
+        try:
+            response.status = ex.args[1]
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {ex.args[0]}
+                </div>
+            </template>
+            """
+        except Exception as ex:
+            ic(ex)
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                   System under maintainance
+                </div>
+            </template>
+            """
+    finally:
+        if "db" in locals(): db.close()
     
 
 
@@ -791,7 +927,7 @@ def _():
             raise Exception("Invalid or expired token", 400)
 
 
-        # Hash the password
+        # Hashing the password
         password = confirm_password.encode()
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password, salt)
@@ -820,7 +956,7 @@ def _():
     except Exception as ex:
         try:
             response.status = ex.args[1]
-            ic
+            
            
             if  'Passwords' not in ex.args[0]:
                 return f"""
@@ -861,14 +997,79 @@ def _():
 def _():
     try:
         db = x.db()
+       
         property_id = request.forms.get("property_id", '')
+        block_state = request.forms.get("block_state", '')
+
+        # Validate data and handlin errurss
+        q = db.execute("SELECT * FROM properties WHERE property_pk = ? LIMIT 1", (property_id,))
+        validproperty = q.fetchone()
+        if not validproperty:
+            raise Exception("Property not found", 404)
+
+        if block_state not in ["block", "unblock"]:
+            raise Exception("Invalid block state", 400)
+        ic(block_state)
+
+        # toogeling between blocked and unblocked states
+        if block_state == "block":
+            new_value = "unblock"
+            new_text = "Unblock"
+            new_status = 1
+        elif block_state == "unblock":
+            new_value = "block"
+            new_text = "Block"
+            new_status = 0
+
+
+        #Setting the time of the update
+        updated_at=int(time.time())
+        ic(updated_at)
+
+         # updating the blocked status in the database
+        db.execute("""
+            UPDATE properties
+            SET blocked = ?, property_updated_at = ?
+            WHERE property_pk = ?
+        """, (new_status, updated_at, property_id))
+        
+        db.commit()
+
+     
+        # Returning the button with correct text and value
         return f"""
-        <template mix-target="[id='{property_id}']" mix-replace>
-            xxxxx
+        <template mix-target="#block{property_id}" mix-replace>
+         <form id="block{property_id}">
+                <input type="hidden" name="property_id" type="text" value="{property_id}">
+                <input type="hidden" name="block_state" type="text" value="{new_value}">
+                <button id="block_button" class="error" value="{new_value}"
+                    mix-data="#block{property_id}"
+                    mix-post="/toogle_property_block">
+                    {new_text}
+                </button>
+            </form> 
         </template>
         """
     except Exception as ex:
-        pass
+        try:
+            response.status = ex.args[1]
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {ex.args[0]}
+                </div>
+            </template>
+            """
+        except Exception as ex:
+            ic(ex)
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                   System under maintainance
+                </div>
+            </template>
+            """
     finally:
         if "db" in locals(): db.close()
 

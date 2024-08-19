@@ -55,6 +55,10 @@ CREATE TABLE properties(
     PRIMARY KEY(property_pk)
 ) WITHOUT ROWID;
 
+
+ALTER TABLE properties
+ADD COLUMN blocked BOOLEAN DEFAULT FALSE;
+
 INSERT INTO properties VALUES
 ("7e862e9b-d4bb-4f91-8686-b29f2b53e539", "Tranquil Retreat", "house_image_1.webp",55.6761123,12.5370567, 5, 2541, 1, 0),
 ("58c9ab83-11e9-42b3-b31a-2a709d231dd6", "Cozy Cottage", "house_image_2.webp",  55.7117212, 12.3795250, 4.97, 985, 2, 0),
