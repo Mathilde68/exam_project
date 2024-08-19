@@ -9,7 +9,7 @@ import uuid
 import send_email
 
 
-########################################### GET ROUTES ###############################
+########################################### GENERAL GET ROUTES ###############################
 ##############################
 @get("/css/<filepath:re:.*\.css>")
 def css(filepath):
@@ -64,7 +64,7 @@ def _():
         if "db" in locals(): db.close()
 
 
-##############################
+############################## GETTING MORE PROPERTIES
 @get("/properties/page/<page_number>")
 def _(page_number):
     try:
@@ -137,8 +137,8 @@ def _():
     try:
         x.no_cache()
         return template("signup.html") 
-    except:
-        pass
+    except Exception as ex:
+        ic(ex)
 
 ##############################
 @get("/forgot_password")
@@ -152,7 +152,7 @@ def _():
    
 
 
-##############################
+############################## 
 @get("/profile")
 def _():
     try:
@@ -171,7 +171,7 @@ def _():
         """, (user_pk,))
         
         booked_properties = q_booked.fetchall()
-        ic(booked_properties)  
+      
 
 
         # getting the owned properties for partners
@@ -188,7 +188,7 @@ def _():
         q_all = db.execute("SELECT * FROM properties ORDER BY property_created_at")
         properties = q_all.fetchall()
 
-        ic(properties)
+    
 
         return template("profile.html", is_logged=True, booked_properties=booked_properties, owned_properties=owned_properties, properties=properties, user=user)
     except Exception as ex:
@@ -212,9 +212,18 @@ def _():
         response.status = 303 
         response.set_header('Location', '/login')
         return
-   
 
-   ######################################## POST ROUTES ##########################################
+
+##############################
+@get("/logout")
+def _():
+    response.delete_cookie("user")
+    response.status = 303
+    response.set_header('Location', '/login')
+    return
+
+
+   ######################################## VARIOUS POST ROUTES ##########################################
 ##############################
 @post("/book_property")
 def _():
@@ -258,8 +267,6 @@ def _():
             </template>
             """
     
-       
-        
     except Exception as ex:
         ic(ex)
         try:
@@ -286,8 +293,129 @@ def _():
         if "db" in locals(): db.close()
 
 
+################################### 
+@post("/toogle_property_block")
+def _():
+    try:
+        db = x.db()
+       
+        property_id = request.forms.get("property_id", '')
+        block_state = request.forms.get("block_state", '')
+
+        # Validate data and handlin errurss
+        q = db.execute("SELECT * FROM properties WHERE property_pk = ? LIMIT 1", (property_id,))
+        validproperty = q.fetchone()
+        if not validproperty:
+            raise Exception("Property not found", 404)
+
+        if block_state not in ["block", "unblock"]:
+            raise Exception("Invalid block state", 400)
+        ic(block_state)
+
+        # toogeling between blocked and unblocked states
+        if block_state == "block":
+            new_value = "unblock"
+            new_status = 1
+        elif block_state == "unblock":
+            new_value = "block"
+            new_status = 0
 
 
+        #Setting the time of the update
+        updated_at=int(time.time())
+        ic(updated_at)
+
+         # updating the blocked status in the database
+        db.execute("""
+            UPDATE properties
+            SET blocked = ?, property_updated_at = ?
+            WHERE property_pk = ?
+        """, (new_status, updated_at, property_id))
+        
+        db.commit()
+
+     
+        # Returning the button with correct text and value
+        return f"""
+        <template mix-target="#block{property_id}" mix-replace>
+         <form id="block{property_id}">
+                <input type="hidden" name="property_id" type="text" value="{property_id}">
+                <input type="hidden" name="block_state" type="text" value="{new_value}">
+                <button id="block_button" class="error" value="{new_value}"
+                    mix-data="#block{property_id}"
+                    mix-post="/toogle_property_block">
+                    {new_value}
+                </button>
+            </form> 
+        </template>
+        """
+    except Exception as ex:
+        try:
+            response.status = ex.args[1]
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {ex.args[0]}
+                </div>
+            </template>
+            """
+        except Exception as ex:
+            ic(ex)
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                   System under maintainance
+                </div>
+            </template>
+            """
+    finally:
+        if "db" in locals(): db.close()
+
+
+
+
+
+############################################
+@post("/edit_profile")
+def _():
+    user=x.validate_user_logged()
+    user_pk= user["user_pk"]
+    return f"""
+        <template mix-target="[id='{user_pk}']" mix-replace>
+             <form id="{user["user_pk"]}">
+                    <div id="profile_editform">
+                        <h1> Edit your profile</h1>
+                        <p>{user["user_role"]}</p>
+                        <div>
+                            <label> Name: </label>
+                            <div id="edit_name_container"> 
+                                <input type="text" id="user_name" name="user_name" mix-check="{x.USER_NAME_REGEX}"
+                                value="{user["user_name"]}" required>
+                                <input type="text" id="user_last_name" name="user_last_name" mix-check="{x.USER_LAST_NAME_REGEX}" 
+                                value="{user["user_last_name"]}" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Username: </label> 
+                            <input type="text" id="user_username" name="user_username" autocomplete="off"
+                                mix-check="{x.USER_USERNAME_REGEX}" value="{user["user_username"]}" required>
+                        </div>
+                        <div>
+                            <label>Email:</label> 
+                            <input name="user_email" type="text" autocomplete="off" 
+                            mix-check='{x.EMAIL_REGEX}' value="{user["user_email"]}" required>
+                        </div>
+                    </div>
+                    <div>
+                        <button mix-data="[id='{user['user_pk']}']" mix-put="/confirm_profile_edit"
+                            >Confirm</button>
+                    </div>
+                </form>
+        </template>
+        """
+
+######################################################## PUT ROUTES #######################################
 ############################################
 @put("/delete_user")
 def _():
@@ -361,49 +489,6 @@ def _():
     finally:
         if "db" in locals(): db.close()
 
-
-############################################
-@post("/edit_profile")
-def _():
-    user=x.validate_user_logged()
-    user_pk= user["user_pk"]
-    return f"""
-        <template mix-target="[id='{user_pk}']" mix-replace>
-             <form id="{user["user_pk"]}">
-                    <div id="profile_editform">
-                        <h1> Edit your profile</h1>
-                        <p>{user["user_role"]}</p>
-                        <div>
-                            <label> Name: </label>
-                            <div id="edit_name_container"> 
-                                <input type="text" id="user_name" name="user_name" mix-check="{x.USER_NAME_REGEX}"
-                                value="{user["user_name"]}" required>
-                                <input type="text" id="user_last_name" name="user_last_name" mix-check="{x.USER_LAST_NAME_REGEX}" 
-                                value="{user["user_last_name"]}" required>
-                            </div>
-                        </div>
-                        <div>
-                            <label>Username: </label> 
-                            <input type="text" id="user_username" name="user_username" autocomplete="off"
-                                mix-check="{x.USER_USERNAME_REGEX}" value="{user["user_username"]}" required>
-                        </div>
-                        <div>
-                            <label>Email:</label> 
-                            <input name="user_email" type="text" autocomplete="off" 
-                            mix-check='{x.EMAIL_REGEX}' value="{user["user_email"]}" required>
-                        </div>
-                    </div>
-                    <div>
-
-
-                        <button mix-data="[id='{user['user_pk']}']" mix-put="/confirm_profile_edit"
-                            >Confirm</button>
-
-
-                    </div>
-                </form>
-        </template>
-        """
 
 
 @put("/confirm_profile_edit")
@@ -496,28 +581,14 @@ def _():
     
 
 
-##############################
-@get("/logout")
-def _():
-    response.delete_cookie("user")
-    response.status = 303
-    response.set_header('Location', '/login')
-    return
 
 
-##############################
-@get("/api")
-def _():
-    return x.test()
-
-
-
+######################################## SIGNUP AND VERIFICATION ##################################
 ##############################
 @post("/signup")
 def _():
     try:
         db = x.db()
-        
         # Validate user inputs
         user_role = x.validate_user_role()
         user_username = x.validate_user_username()
@@ -534,11 +605,11 @@ def _():
         if already_user:
             raise Exception("Email already registered", 409)
         
-        # Generate unique user ID and current timestamp
+        # Generating unique user ID and current timestamp
         user_pk = str(uuid.uuid4().hex)
         user_created_at = int(time.time())
 
-        # Hash the password
+        # Hashing the password
         password = user_password.encode()
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password, salt)
@@ -571,6 +642,7 @@ def _():
         ic(ex)
         try:
             response.status = ex.args[1]
+            ic(ex.args[0])
             return f"""
             <template mix-target="#toast">
                 <div mix-ttl="3000" class="error">
@@ -632,10 +704,10 @@ def verify_account():
         ic(user_email)
         ic(verification_code)
         
-        # Connect to the database
+        # connect to the database
         db = x.db()
         
-       # Fetch user and check if the user is exists
+       # Fetching the user and checkib if the user is exists
         user_query = db.execute("SELECT user_pk, user_is_verified FROM users WHERE user_email = ? LIMIT 1", (user_email,))
         user = user_query.fetchone()
         
@@ -647,7 +719,7 @@ def verify_account():
         if user['user_is_verified'] == 1:
             raise Exception("User is already verified", 400)
         
-        # Check if the verification code is correct
+        # check if the verification code is correct
         verification_query = db.execute("""SELECT * FROM user_verification WHERE user_fk = ? 
                                            AND verification_code = ? LIMIT 1""", 
                                            (user['user_pk'], verification_code))
@@ -659,7 +731,7 @@ def verify_account():
         if not verification_result:
             raise Exception("Invalid verification code", 400)
         
-        # Updating the user's verification status
+        # Updating the users verification status
         db.execute("UPDATE users SET user_is_verified = 1 WHERE user_email = ?", (user_email,))
         db.commit()
         
@@ -667,7 +739,7 @@ def verify_account():
         db.execute("DELETE FROM user_verification WHERE user_fk = (SELECT user_pk FROM users WHERE user_email = ?)", (user_email,))
         db.commit()
         
-        # OPTINAL TO_DO: should i give message b4 redirect?
+       
         return f"""
         <template mix-target="#frm_verify" mix-replace>
         </template>
@@ -706,11 +778,7 @@ def verify_account():
         if "db" in locals(): db.close()
 
 
-
-
-
-
-
+####################################### LOGIN AND FORGOT PASSWORD #################
 ##############################
 @post("/login")
 def _():
@@ -997,91 +1065,10 @@ def _():
     finally:
         if "db" in locals(): db.close()
 
-##############################
-@post("/toogle_property_block")
-def _():
-    try:
-        db = x.db()
-       
-        property_id = request.forms.get("property_id", '')
-        block_state = request.forms.get("block_state", '')
-
-        # Validate data and handlin errurss
-        q = db.execute("SELECT * FROM properties WHERE property_pk = ? LIMIT 1", (property_id,))
-        validproperty = q.fetchone()
-        if not validproperty:
-            raise Exception("Property not found", 404)
-
-        if block_state not in ["block", "unblock"]:
-            raise Exception("Invalid block state", 400)
-        ic(block_state)
-
-        # toogeling between blocked and unblocked states
-        if block_state == "block":
-            new_value = "unblock"
-            new_status = 1
-        elif block_state == "unblock":
-            new_value = "block"
-            new_status = 0
-
-
-        #Setting the time of the update
-        updated_at=int(time.time())
-        ic(updated_at)
-
-         # updating the blocked status in the database
-        db.execute("""
-            UPDATE properties
-            SET blocked = ?, property_updated_at = ?
-            WHERE property_pk = ?
-        """, (new_status, updated_at, property_id))
-        
-        db.commit()
-
-     
-        # Returning the button with correct text and value
-        return f"""
-        <template mix-target="#block{property_id}" mix-replace>
-         <form id="block{property_id}">
-                <input type="hidden" name="property_id" type="text" value="{property_id}">
-                <input type="hidden" name="block_state" type="text" value="{new_value}">
-                <button id="block_button" class="error" value="{new_value}"
-                    mix-data="#block{property_id}"
-                    mix-post="/toogle_property_block">
-                    {new_value}
-                </button>
-            </form> 
-        </template>
-        """
-    except Exception as ex:
-        try:
-            response.status = ex.args[1]
-            return f"""
-            <template mix-target="#toast">
-                <div mix-ttl="3000" class="error">
-                    {ex.args[0]}
-                </div>
-            </template>
-            """
-        except Exception as ex:
-            ic(ex)
-            response.status = 500
-            return f"""
-            <template mix-target="#toast">
-                <div mix-ttl="3000" class="error">
-                   System under maintainance
-                </div>
-            </template>
-            """
-    finally:
-        if "db" in locals(): db.close()
 
 
 
-
-
-
-####Arango code###
+#####################################Arango code###########################
 
 ##############################
 @get("/arango/properties")

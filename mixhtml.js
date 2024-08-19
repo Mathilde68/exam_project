@@ -64,7 +64,7 @@ async function mix_fetch_data(el){
             if( ! re.test(attrs[i].value) ){
                 cl("mix-check failed")
                 attrs[i].classList.add("mix-error")
-                errors = true
+                errors = false
             } else {
                 console.log("mix-check passed for element:", attrs[i]);
                 attrs[i].classList.add("mix-valid");

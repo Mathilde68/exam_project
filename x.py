@@ -142,6 +142,7 @@ def validate_user_username():
     error = f"Username must be {USER_USERNAME_MIN} to {USER_USERNAME_MAX} lowercase english letters"
     user_username = request.forms.get("user_username", "").strip()
     if not re.match(USER_USERNAME_REGEX, user_username): raise Exception(error, 400)
+    ic(error)
     return user_username
 
 ##############################
