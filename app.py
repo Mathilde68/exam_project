@@ -1099,6 +1099,8 @@ def _():
 
         properties = response.get('result', [])
 
+        ic(properties)
+
         
         return template("arangoproperties.html", properties=properties)
     except Exception as ex:
@@ -1191,7 +1193,7 @@ def _(key):
     try:
         property_key = {"_key": key}
         property_name = request.forms.get("property_name", "")
-        property = {"name":property_name}
+        property = {"property_name":property_name}
         q = {"query":"UPDATE @property_key WITH @property IN properties RETURN NEW", 
              "bindVars":{
                         "property_key": property_key,

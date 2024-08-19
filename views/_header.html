@@ -36,6 +36,10 @@
 
         <div class="links">
 
+            <a href="/arangoview/properties" class="{{ get('active_login', '') }}">
+                Arango
+            </a>
+
             % if get("is_logged", False):
                 <a href="/profile" class="{{ get('active_login', '') }}">
                     Your profile
