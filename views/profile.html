@@ -30,7 +30,7 @@
         <section id="booking_section">
             <h2>Your bookings</h2>
             <div class="properties_container">
-                % if properties:
+                % if booked_properties:
                 <div id="properties" class="properties">
                     % for property in booked_properties:
                     %include("_booked_property")
@@ -71,7 +71,6 @@
               %include("_manage_property")
               % end
             </div>
-            %include("__btn_more", page_number=2)
           </div>
         </section>
         % end

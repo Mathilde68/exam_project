@@ -28,13 +28,19 @@
             % if 'admin' in {user["user_role"]}:
             <form id="block{{property["property_pk"]}}">
                 <input type="hidden" name="property_id" type="text" value="{{property["property_pk"]}}">
-                <input type="hidden" name="block_state" type="text" value="block">
-                <button id="block_button" class="error"
+                % if (property["blocked"]) == 0:
+                    <input type="hidden" name="block_state" type="text" value="block">
+                    <button id="block_button" class="error"
                     mix-data="#block{{property['property_pk']}}"
                     mix-post="/toogle_property_block"
-                >
-                    Block
-                </button>
+                    > Block </button>
+                % else:
+                    <input type="hidden" name="block_state" type="text" value="unblock">
+                    <button id="block_button" class="error"
+                    mix-data="#block{{property['property_pk']}}"
+                    mix-post="/toogle_property_block"
+                    > Unblock </button>
+                % end
             </form>
             % end
         % end

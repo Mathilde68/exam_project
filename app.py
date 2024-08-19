@@ -9,7 +9,7 @@ import uuid
 import send_email
 
 
-
+########################################### GET ROUTES ###############################
 ##############################
 @get("/css/<filepath:re:.*\.css>")
 def css(filepath):
@@ -71,10 +71,10 @@ def _(page_number):
         db = x.db()
         next_page = int(page_number) + 1
         offset = (int(page_number) - 1) * x.ITEMS_PER_PAGE
-        q = db.execute(f"""     SELECT * FROM properties 
+        q = db.execute(f"""     SELECT * FROM properties WHERE blocked = ?
                                 ORDER BY property_created_at 
                                 LIMIT ? OFFSET {offset}
-                        """, (x.ITEMS_PER_PAGE,))
+                        """, (0,x.ITEMS_PER_PAGE,))
         properties = q.fetchall()
 
         is_logged = False
@@ -111,6 +111,110 @@ def _(page_number):
         if "db" in locals(): db.close()
 
 
+##############################
+@get("/login")
+def _():
+    try:
+        x.no_cache()
+        try: 
+            x.validate_user_logged()
+            is_logged = True 
+            response.status = 303 
+            response.set_header('Location', '/profile')
+        
+        except Exception as ex:
+            ic(ex)
+    
+        return template("login.html") 
+    except:
+        pass
+
+
+
+##############################
+@get("/signup")
+def _():
+    try:
+        x.no_cache()
+        return template("signup.html") 
+    except:
+        pass
+
+##############################
+@get("/forgot_password")
+def _():
+    try:
+        x.no_cache()
+        return template("forgot_password.html") 
+    except:
+        pass
+   
+   
+
+
+##############################
+@get("/profile")
+def _():
+    try:
+        x.no_cache()
+        user = x.validate_user_logged()
+        user_pk=(user["user_pk"])
+        db = x.db()
+
+        # getting the booked properties
+        q_booked = db.execute("""
+            SELECT p.* 
+            FROM properties p
+            INNER JOIN bookings b ON p.property_pk = b.property_fk
+            WHERE b.user_fk = ?
+            ORDER BY p.property_created_at 
+        """, (user_pk,))
+        
+        booked_properties = q_booked.fetchall()
+        ic(booked_properties)  
+
+
+        # getting the owned properties for partners
+        q_owned = db.execute("""
+            SELECT p.* 
+            FROM properties p
+            INNER JOIN partners_properties pp ON p.property_pk = pp.property_fk
+            WHERE pp.user_fk = ?
+            ORDER BY p.property_created_at
+        """, (user_pk,))
+        owned_properties = q_owned.fetchall()
+
+        #getting all properties for the admin
+        q_all = db.execute("SELECT * FROM properties ORDER BY property_created_at")
+        properties = q_all.fetchall()
+
+        ic(properties)
+
+        return template("profile.html", is_logged=True, booked_properties=booked_properties, owned_properties=owned_properties, properties=properties, user=user)
+    except Exception as ex:
+        ic(ex)
+        response.status = 303 
+        response.set_header('Location', '/login')
+        return
+    finally:
+        if "db" in locals(): db.close()
+
+
+########################################
+@get("/confirm_delete_profile")
+def _():
+    try:
+        x.validate_user_logged()
+     
+        return template("confirm_delete_profile.html") 
+    except Exception as ex:
+        ic(ex)
+        response.status = 303 
+        response.set_header('Location', '/login')
+        return
+   
+
+   ######################################## POST ROUTES ##########################################
 ##############################
 @post("/book_property")
 def _():
@@ -182,106 +286,7 @@ def _():
         if "db" in locals(): db.close()
 
 
-##############################
-@get("/login")
-def _():
-    try:
-        x.no_cache()
-        try: 
-            x.validate_user_logged()
-            is_logged = True 
-            response.status = 303 
-            response.set_header('Location', '/profile')
-        
-        except Exception as ex:
-            ic(ex)
-    
-        return template("login.html") 
-    except:
-        pass
 
-
-##############################
-@get("/signup")
-def _():
-    try:
-        x.no_cache()
-        return template("signup.html") 
-    except:
-        pass
-
-##############################
-@get("/forgot_password")
-def _():
-    try:
-        x.no_cache()
-        return template("forgot_password.html") 
-    except:
-        pass
-   
-   
-
-
-##############################
-@get("/profile")
-def _():
-    try:
-        x.no_cache()
-        user = x.validate_user_logged()
-        user_pk=(user["user_pk"])
-        db = x.db()
-
-        # getting the booked properties
-        q_booked = db.execute("""
-            SELECT p.* 
-            FROM properties p
-            INNER JOIN bookings b ON p.property_pk = b.property_fk
-            WHERE b.user_fk = ?
-            ORDER BY p.property_created_at 
-        """, (user_pk,))
-        
-        booked_properties = q_booked.fetchall()
-        ic(booked_properties)  
-
-
-        # getting the owned properties for partners
-        q_owned = db.execute("""
-            SELECT p.* 
-            FROM properties p
-            INNER JOIN partners_properties pp ON p.property_pk = pp.property_fk
-            WHERE pp.user_fk = ?
-            ORDER BY p.property_created_at
-        """, (user_pk,))
-        owned_properties = q_owned.fetchall()
-
-        #getting all properties for the admin
-        q_all = db.execute("SELECT * FROM properties ORDER BY property_created_at")
-        properties = q_all.fetchall()
-
-
-        return template("profile.html", is_logged=True, booked_properties=booked_properties, owned_properties=owned_properties, properties=properties, user=user)
-    except Exception as ex:
-        ic(ex)
-        response.status = 303 
-        response.set_header('Location', '/login')
-        return
-    finally:
-        if "db" in locals(): db.close()
-
-
-########################################
-@get("/confirm_delete_profile")
-def _():
-    try:
-        x.validate_user_logged()
-     
-        return template("confirm_delete_profile.html") 
-    except Exception as ex:
-        ic(ex)
-        response.status = 303 
-        response.set_header('Location', '/login')
-        return
-   
 
 ############################################
 @put("/delete_user")
@@ -1014,11 +1019,9 @@ def _():
         # toogeling between blocked and unblocked states
         if block_state == "block":
             new_value = "unblock"
-            new_text = "Unblock"
             new_status = 1
         elif block_state == "unblock":
             new_value = "block"
-            new_text = "Block"
             new_status = 0
 
 
@@ -1045,7 +1048,7 @@ def _():
                 <button id="block_button" class="error" value="{new_value}"
                     mix-data="#block{property_id}"
                     mix-post="/toogle_property_block">
-                    {new_text}
+                    {new_value}
                 </button>
             </form> 
         </template>

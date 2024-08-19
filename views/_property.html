@@ -25,7 +25,7 @@
         </p>
         % if get("user", False):
         <form id="{{property["property_pk"]}}">
-            
+            <input type="hidden" name="property_id" type="text" value="{{property["property_pk"]}}">
             <button
                 mix-data="[id='{{property['property_pk']}}']"
                 mix-post="/book_property"
@@ -34,18 +34,6 @@
             </button>
         </form>
        
-            % if 'admin' in {user["user_role"]}:
-            <form id="block{{property["property_pk"]}}">
-                <input type="hidden" name="property_id" type="text" value="{{property["property_pk"]}}">
-                <input type="hidden" name="block_state" type="text" value="block">
-                <button id="block_button" class="error"
-                    mix-data="#block{{property['property_pk']}}"
-                    mix-post="/toogle_property_block"
-                >
-                    Block
-                </button>
-            </form>
-            % end
         % end
     </div>
 </div>

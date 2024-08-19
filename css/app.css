@@ -497,3 +497,11 @@ gap: 0.5rem;
 #delete_button:hover{
     background-color: var(--color-error2);
 }
+
+#admin_panel{
+    padding-top: 2rem;
+}
+
+#admin_panel h2, #admin_panel > p{
+    text-align: center;
+}
