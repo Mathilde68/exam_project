@@ -968,7 +968,7 @@ def reset_password_form(reset_token):
         # Validate the reset token
         user_pk = verify_reset_token(reset_token)
         if not user_pk:
-            raise Exception("Invalid or expired token", 400)
+            raise Exception("Invalid or expired token", 401)
 
         # Render the password reset form
         return template("reset_password.html", token=reset_token, user_pk=user_pk)
@@ -997,7 +997,7 @@ def _():
         # Validate the reset token
         user_pk = verify_reset_token(token)
         if not user_pk:
-            raise Exception("Invalid or expired token", 400)
+            raise Exception("Invalid or expired token", 401)
 
 
         # Hashing the password
