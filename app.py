@@ -869,10 +869,9 @@ def _():
 
         if user_with_token:
             current_time = int(time.time())
-            #converting to be able to compare to expiration time
-            #current_time_str = current_time.strftime('%Y-%m-%d %H:%M:%S.%f')
+           
             ic(current_time)
-            # Get the expiration time from the result
+          
             expiration_time = user_with_token['expiration_time']
 
             ic(expiration_time)
